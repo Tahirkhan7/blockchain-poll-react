@@ -1,15 +1,26 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import web3 from '../utils/web3';
 import contract from '../utils/contract';
+import { WalletContext } from '../context/WalletContext';
 
 function PollDetails({ poll }) {
+  const { account } = useContext(WalletContext);
+
   const vote = async (index) => {
-    const accounts = await web3.eth.getAccounts();
+    if (!account) return alert("Please connect your wallet first.");
     try {
-      await contract.methods.vote(poll.id, index).send({ from: accounts[0] });
+      await contract.methods.vote(poll.id, index).send({ from: account });
       alert("Vote cast successfully!");
     } catch (err) {
       alert("Error voting: " + err.message);
+    }
+  };
+
+  const decodeOption = (hex) => {
+    try {
+      return web3.utils.hexToUtf8(hex).replace(/\u0000/g, '');
+    } catch {
+      return hex;
     }
   };
 
@@ -20,7 +31,7 @@ function PollDetails({ poll }) {
       <ul>
         {poll.options.map((opt, idx) => (
           <li key={idx}>
-            {web3.utils.hexToAscii(opt)} — Votes: {poll.votes[idx]}
+            {decodeOption(opt)} — Votes: {poll.votes[idx]}
             <button onClick={() => vote(idx)}>Vote</button>
           </li>
         ))}

@@ -10,13 +10,11 @@ function PollList() {
     const fetchPolls = async () => {
       try {
         const total = await contract.methods.getTotalPolls().call();
-        console.log("Total polls:", total); // 👈
 
         const loaded = [];
 
         for (let i = 0; i < total; i++) {
           const poll = await contract.methods.getPoll(i).call();
-          console.log("Poll", i, poll); // 👈
 
           loaded.push({
             id: poll[0],
