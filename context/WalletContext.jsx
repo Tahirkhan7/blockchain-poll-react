@@ -7,7 +7,6 @@ export const WalletProvider = ({ children }) => {
   const [account, setAccount] = useState(null);
   const [web3, setWeb3] = useState(null);
 
-  // Load Web3 and try to auto-connect if previously connected
   useEffect(() => {
     if (window.ethereum) {
       const web3Instance = new Web3(window.ethereum);
@@ -15,7 +14,6 @@ export const WalletProvider = ({ children }) => {
 
       const wasConnected = localStorage.getItem('walletConnected');
       if (wasConnected) {
-        // Try reconnect silently
         window.ethereum.request({ method: 'eth_accounts' }).then((accounts) => {
           if (accounts.length > 0) {
             setAccount(accounts[0]);
@@ -23,7 +21,6 @@ export const WalletProvider = ({ children }) => {
         });
       }
 
-      // Listen for account change
       window.ethereum.on('accountsChanged', (accounts) => {
         if (accounts.length > 0) {
           setAccount(accounts[0]);
